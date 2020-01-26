@@ -1,0 +1,29 @@
+version: '2'
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DATABASE=metric_loc
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5433:5432'
+  php-fpm:
+    build: docker/php-fpm
+    ports:
+      - '9002:9000'
+    volumes:
+      - ./:/var/www/project:cached
+      - ./logs/symfony:/var/www/project/var/logs:cached
+    links:
+      - postgres
+  nginx:
+    build: docker/nginx
+    ports:
+      - '80:80'
+    links:
+      - php-fpm
+    volumes_from:
+      - php-fpm
+    volumes:
+      - ./logs/nginx/:/var/log/nginx:cached

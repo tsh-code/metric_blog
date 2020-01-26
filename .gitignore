@@ -1,0 +1,12 @@
+.env
+.idea
+
+docker-compose.yaml
+
+var/log
+var/logs
+var/cache
+vendor
+logs
+symfony
+docker/data
