@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm
+  labels:
+    app: php-fpm
+spec:
+  selector:
+    matchLabels:
+      app: php-fpm
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: php-fpm
+    spec:
+      containers:
+      - name: php-fpm
+        image: metric_app:unreleased
+        args: ["--start-cgi-server"]
+        env:
+        - name: APP_ENV
+          value: "dev"
+        - name: APP_SECRET
+          value: "00c73f71c932492dd48a6700eb35a9da"
+        - name: POSTGRES_DATABASE
+          value: "metric_loc"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        - name: DATABASE_URL
+          value: "pgsql://postgres:postgres@postgresql:5432/metric_loc"
+        - name: CONTROLLER_METRICS_ENABLED
+          value: "true"
+        - name: METRIC_REDIS_PREFIX
+          value: "PROMETHEUS_"
+        - name: REDIS_DSN
+          value: "redis://redis"
+        ports:
+        - containerPort: 9000
+        resources: {}

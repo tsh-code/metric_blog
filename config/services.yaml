@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    controller_metrics_enabled: '%env(CONTROLLER_METRICS_ENABLED)%'
+    metric_redis_prefix: '%env(METRIC_REDIS_PREFIX)%'
+    redis_dsn: '%env(REDIS_DSN)%'
 
 services:
     # default configuration for services in *this* file
@@ -25,3 +28,31 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    app.storage.redis.prometheus:
+        class: App\Storage\Redis\DefaultRedisStorage
+        arguments:
+            - '@snc_redis.default'
+        calls:
+            - method: setPrefix
+              arguments:
+                  - '%metric_redis_prefix%'
+                  - false
+
+    App\EventSubscriber\LogControllerActionSubscriber:
+        class: App\EventSubscriber\LogControllerActionSubscriber
+        arguments:
+            $envForPrometheus: '%metric_redis_prefix%'
+            $isSubscriberEnabled: '%controller_metrics_enabled%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    App\Controller\ControllerActionMetricController:
+        $redisStorage: '@app.storage.redis.prometheus'
+
+    redis:
+        class: Redis
+        calls:
+            - method: connect
+              arguments:
+                  - 'redis'

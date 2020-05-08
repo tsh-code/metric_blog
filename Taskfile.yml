@@ -1,0 +1,88 @@
+version: '2'
+vars:
+  BASIC_NETWORK: metric_article_network
+tasks:
+  copy-basic-files:
+    desc: Create basic config files based on .dist
+    cmds:
+      - test -f .env || cp .env.dist .env
+      - test -f docker-compose.yaml || cp docker-compose.yaml.dist docker-compose.yaml
+
+  kind-install:
+    desc: Install KIND
+    cmds:
+      - curl -Lo ./kind "https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-{{OS}}-{{ARCH}}"
+      - chmod +x ./kind
+
+  kubernetes-install:
+    desc: Install KIND
+    cmds:
+      - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/{{OS}}/{{ARCH}}/kubectl
+      - chmod +x ./kubectl
+  kubeconfig:
+    desc: Prepare envrc file with kubeconfig path.
+    cmds:
+      - ./kind get kubeconfig --name=kind > kind_kubeconfig
+      - echo "export KUBECONFIG={{.KUBE_KIND_CONF_DIR}}/kind_kubeconfig" > .envrc
+      - direnv allow
+    vars:
+      KUBE_KIND_CONF_DIR:
+        sh: pwd
+
+  init:
+    desc: Initialize basic config to run application with Kubernetes
+    cmds:
+      - task: copy-basic-files
+      - task: kubernetes-install
+      - task: kind-install
+
+  start:
+    desc: Prepare and run application in kubernetes
+    cmds:
+      - task: build-image
+      - task: load-image-kind
+      - task: deploy-on-k8s
+
+  build-image:
+    desc: Build basic application image
+    cmds:
+      - docker-compose build
+
+  load-image-kind:
+    desc: Put image in kind
+    cmds:
+      - ./kind load docker-image metric_app:unreleased
+
+  deploy-on-k8s:
+    desc: Run image
+    cmds:
+      - ./kubectl apply -f k8s -R
+
+  docker-init:
+    desc: Initialize application with docker
+    cmds:
+      - task: copy-basic-files
+      - docker network create --driver=bridge {{.BASIC_NETWORK}} || true
+      - docker-compose up -d --build
+      - docker-compose run --rm php-fpm composer install
+      - task: prepare-dev-db
+
+  docker-start:
+    desc: Start application with docker
+    cmds:
+      - docker-compose up -d
+      - docker-compose run --rm php-fpm composer install
+
+  docker-remove:
+    desc: Remove application with docker
+    cmds:
+      - docker-compose down -v
+      - docker network rm {{.BASIC_NETWORK}}
+
+  prepare-dev-db:
+    desc: Prepare database structure
+    cmds:
+      - docker-compose run --rm php-fpm bin/console doctrine:database:drop --force --if-exists
+      - docker-compose run --rm php-fpm bin/console doctrine:database:create
+      - docker-compose run --rm php-fpm php bin/console doctrine:m:m --no-interaction
+      - docker-compose run --rm php-fpm bin/console doctrine:schema:update --force

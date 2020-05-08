@@ -1,0 +1,28 @@
+#############################
+### System files
+#############################
+
+/**/*~
+/**/.DS_Store
+/**/desktop.ini
+/**/thumbs.db
+
+#############################
+### VCS
+#############################
+
+/**/.git
+/**/.gitignore
+/**/.gitkeep
+
+#############################
+### Application
+#############################
+
+# Package managers
+/node_modules
+/vendor
+
+# Custom output
+/var
+

@@ -1,0 +1,77 @@
+services:
+  TweedeGolf\PrometheusClient\CollectorRegistry:
+    class: TweedeGolf\PrometheusClient\CollectorRegistry
+    arguments:
+      - '@TweedeGolf\PrometheusClient\Storage\RedisAdapter'
+      - false
+      - false
+
+  TweedeGolf\PrometheusClient\Storage\RedisAdapter:
+    class: TweedeGolf\PrometheusClient\Storage\RedisAdapter
+    arguments:
+      - '@redis'
+      - '%metric_redis_prefix%'
+
+  #################
+  #               #
+  #  Tag section  #
+  #               #
+  #################
+
+  tweede_golf.prometheus_client.collector.app_request_called_quantity_total:
+    class: TweedeGolf\PrometheusClient\Collector\Counter
+    factory: TweedeGolf\PrometheusClient\CollectorRegistry:createCounter
+    arguments:
+      - 'app_request_called_quantity_total'
+      - ['router', 'env', 'application']
+      - 'Quantity of called requests'
+    tags: [tweede_golf_prometheus.collector]
+
+  tweede_golf.prometheus_client.collector.app_sub_request_called_quantity_total:
+    class: TweedeGolf\PrometheusClient\Collector\Counter
+    factory: TweedeGolf\PrometheusClient\CollectorRegistry:createCounter
+    arguments:
+      - 'app_sub_request_called_quantity_total'
+      - ['router', 'env', 'application']
+      - 'Quantity of called sub requests'
+    tags: [tweede_golf_prometheus.collector]
+
+  tweede_golf.prometheus_client.collector.app_request_execution_time_seconds:
+    class: TweedeGolf\PrometheusClient\Collector\Histogram
+    factory: TweedeGolf\PrometheusClient\CollectorRegistry:createHistogram
+    arguments:
+      - 'app_request_execution_time_seconds'
+      - ['router', 'env', 'application']
+      - []
+      - 'Request duration'
+    tags: [tweede_golf_prometheus.collector]
+
+  tweede_golf.prometheus_client.collector.app_request_db_query_execution_time_seconds:
+    class: TweedeGolf\PrometheusClient\Collector\Histogram
+    factory: TweedeGolf\PrometheusClient\CollectorRegistry:createHistogram
+    arguments:
+      - 'app_request_db_query_execution_time_seconds'
+      - ['router', 'env', 'application']
+      - []
+      - 'Database queries duration'
+    tags: [tweede_golf_prometheus.collector]
+
+  tweede_golf.prometheus_client.collector.app_request_db_query_quantity:
+    class: TweedeGolf\PrometheusClient\Collector\Histogram
+    factory: TweedeGolf\PrometheusClient\CollectorRegistry:createHistogram
+    arguments:
+      - 'app_request_db_query_quantity'
+      - ['router', 'env', 'application']
+      - []
+      - 'Quantity of database requests'
+    tags: [tweede_golf_prometheus.collector]
+
+  tweede_golf.prometheus_client.collector.app_request_db_query_type:
+    class: TweedeGolf\PrometheusClient\Collector\Histogram
+    factory: TweedeGolf\PrometheusClient\CollectorRegistry:createHistogram
+    arguments:
+      - 'app_request_db_query_type'
+      - ['router', 'env', 'application', 'type', 'table_name']
+      - []
+      - 'Quantity of database query types'
+    tags: [tweede_golf_prometheus.collector]

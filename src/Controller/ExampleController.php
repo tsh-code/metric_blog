@@ -16,7 +16,9 @@ class ExampleController extends AbstractController
      */
     public function getExample(ExampleRepository $exampleRepository): Response
     {
-        $exampleRepository->findAll();
+        for ($i = 0; $i < rand(1, 3); $i++) {
+            $exampleRepository->findAll();
+        }
 
         return new Response('', Response::HTTP_OK);
     }
@@ -26,9 +28,11 @@ class ExampleController extends AbstractController
      */
     public function postExample(EntityManagerInterface $entityManager): Response
     {
-        $example = new Example();
-        $example->setFoo('some data');
-        $entityManager->persist($example);
+        for ($i = 0; $i < rand(1, 3); $i++) {
+            $example = new Example();
+            $example->setFoo('some data');
+            $entityManager->persist($example);
+        }
         $entityManager->flush();
 
         return new Response('', Response::HTTP_CREATED);

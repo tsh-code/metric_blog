@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  generation: 1
+  labels:
+    app: web
+    release: prometheus-operator
+  name: web-app-sm
+spec:
+  endpoints:
+  - path: /metrics
+    port: http
+    interval: 120s
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      app: web

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: metric_app:unreleased
+        args: ["--start-http-server"]
+        env:
+        - name: APP_CGI_SERVER_HOST
+          value: "php-fpm"
+        - name: APP_CGI_SERVER_PORT
+          value: "9000"
+        ports:
+        - containerPort: 80
+        resources: {}

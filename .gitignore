@@ -10,3 +10,7 @@ vendor
 logs
 symfony
 docker/data
+kind
+kubectl
+kind_kubeconfig
+.envrc

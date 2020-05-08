@@ -3,27 +3,52 @@ services:
   postgres:
     image: postgres
     environment:
-      - POSTGRES_DATABASE=metric_loc
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - '5433:5432'
+    networks:
+      - metric_article_network
+
   php-fpm:
-    build: docker/php-fpm
+    build:
+      context: ./
+      dockerfile: ./docker/image/Dockerfile 
+    image: metric_app:unreleased
+    command: ["--start-cgi-server"]
     ports:
       - '9002:9000'
     volumes:
-      - ./:/var/www/project:cached
+      - ./:/var/www/project
       - ./logs/symfony:/var/www/project/var/logs:cached
     links:
       - postgres
+    networks:
+      - metric_article_network
+
   nginx:
-    build: docker/nginx
+    build:
+      context: ./
+      dockerfile: ./docker/image/Dockerfile 
+    image: metric_app:unreleased
+    command: ["--start-http-server"]
     ports:
-      - '80:80'
+      - '8081:80'
     links:
       - php-fpm
     volumes_from:
       - php-fpm
     volumes:
       - ./logs/nginx/:/var/log/nginx:cached
+    networks:
+      - metric_article_network
+
+  redis:
+    image: redis:3
+    networks:
+      - metric_article_network
+
+networks:
+  metric_article_network:
+    external: true
