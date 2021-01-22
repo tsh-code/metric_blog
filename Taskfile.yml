@@ -1,6 +1,8 @@
 version: '2'
 vars:
   BASIC_NETWORK: metric_article_network
+  KUBERNETES_VERSION: v1.17.0
+  KIND_VERSION: v0.7.0
 tasks:
   copy-basic-files:
     desc: Create basic config files based on .dist
@@ -11,13 +13,13 @@ tasks:
   kind-install:
     desc: Install KIND
     cmds:
-      - curl -Lo ./kind "https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-{{OS}}-{{ARCH}}"
+      - curl -Lo ./kind "https://github.com/kubernetes-sigs/kind/releases/download/{{.KIND_VERSION}}/kind-{{OS}}-{{ARCH}}"
       - chmod +x ./kind
 
   kubernetes-install:
     desc: Install KIND
     cmds:
-      - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/{{OS}}/{{ARCH}}/kubectl
+      - curl -LO https://storage.googleapis.com/kubernetes-release/release/{{.KUBERNETES_VERSION}}/bin/{{OS}}/{{ARCH}}/kubectl
       - chmod +x ./kubectl
   kubeconfig:
     desc: Prepare envrc file with kubeconfig path.
