@@ -25,7 +25,7 @@ Application has 5 endpoints:
 - [Docker](https://www.docker.com/)
 - [Docker-compose](https://docs.docker.com/compose/)
 - [Task](https://taskfile.dev)
-> Application wasn't tested on Windows
+> The application wasn't tested on Windows
 
 ## Setup
 ### Kubernetes based version
@@ -38,7 +38,7 @@ Application has 5 endpoints:
 - Run `task start`
 - Open `http://localhost` to check if works
 - If you get `502 Bad Gateway`, please wait little longer. Application needs a moment to wake up
-- To generate some example traffic use [prepared stress tests project](https://github.com/TheGeniesis/metric_blog_stress_tests)
+- To generate an example traffic use [prepared stress tests project](https://github.com/TheGeniesis/metric_blog_stress_tests)
 
 ### Docker based version
 
@@ -48,8 +48,8 @@ Application has 5 endpoints:
 #### Run application
 - Run `task docker-start`
 - Open `http://localhost:8081` to check if works
-- To generate some example traffic use [prepared stress tests project](https://github.com/TheGeniesis/metric_blog_stress_tests)
-> To see Grafana and prometheus panel you need to use Kubernetes version
+- To generate an example traffic use [prepared stress tests project](https://github.com/TheGeniesis/metric_blog_stress_tests)
+> To see Grafana and prometheus panel you need to use the Kubernetes version
 
 ### Remove application
 - Run `task remove-dev`
